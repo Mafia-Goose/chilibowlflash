@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+ <body>
+	<div class="ads">
+		<div class="ad-smallscreen">
+			<div class="ad ad-rectangle-bottom" style="display: block;">
+			</div>
+		</div>
+		<div class="ad ad-rectangle-upper" id="adRectangleUpper" style="display: block;">
+			<!-- 300X250B PLACEMENT TAG - PLACE INTO BODY (ZONE TAG REQUIRED) -->
+			<script>
+				(function(w,pid){
+				var r=function(c,m){c=c.split('').reduce(function(a,b){return(a<<5)-a+b.charCodeAt(0)>>>m},0);return(10+((c*7)%26)).toString(36)+c.toString(36);},y=r(w.location.href.split('#')[0],1),c=r(w.location.href.split('#')[0]+pid,0);
+				w.document.write('<div style="width:300px;height:250px" class="'+c+'"></div>');
+				})(window,85074);
+			</script><div style="width:300px;height:250px" class="y1fvblyq"></div>
+		</div>
+		<div class="ad-largescreen">
+			<div class="ad ad-leaderboard-bottom" id="adLeaderboardBottom" style="display: block;">
+			</div>
+		</div>
+	</div>
+	<div id="gameContainer" style="padding: 0px; margin: 0px; border: 0px; position: relative; background: rgb(0, 0, 0);"><canvas id="#canvas" style="width: 100%; height: 100%; cursor: default;" width="1084" height="978"></canvas></div>
+	<div id="loader" style="display: none;">
+		<div class="spinner" style="display: none;"></div>
+		<div class="progress" style="display: block;">
+			<div class="full" style="transform: scaleX(1);"></div>
+		</div>
+	</div>
+	<script src="fullscreen.js"></script>
+	<script id="unity-loader" src="https://raw.githubusercontent.com/Mafia-Goose/chilibowlflash/main/justfall/UnityLoader.js"></script>
+    <script>
+		var gameJsonUrl = "https://raw.githubusercontent.com/Mafia-Goose/chilibowlflash/main/justfall/justfall.json";//%gameJsonUrl
+		var urlParams = new URLSearchParams(window.location.search);
+		if(urlParams.has('v')){
+			gameJsonUrl = gameJsonUrl.replace(/[0-9][0-9]+/i, urlParams.get('v'));
+		}
+		var gameInstance = UnityLoader.instantiate("gameContainer", gameJsonUrl, {onProgress: UnityProgress});
+		
+		function UnityProgress(gameInstance, progress) {
+			if (!gameInstance.Module) {
+				return;
+			}
+			const loader = document.querySelector("#loader");
+			if (!gameInstance.progress) {
+				const progress = document.querySelector("#loader .progress");
+				progress.style.display = "block";
+				gameInstance.progress = progress.querySelector(".full");
+				loader.querySelector(".spinner").style.display = "none";
+			}
+			gameInstance.progress.style.transform = `scaleX(${progress})`;
+			if (progress === 1 && !gameInstance.removeTimeout) {
+				loader.style.display = "none";
+				gameLoaded = true;
+			}
+		}
+		
+		initializeFullscreenEvents();
+		
+		injectAdByWindowSize();
+		
+		showAds();
+		
+		document.addEventListener('visibilitychange',
+		function () {
+		  if(!gameInstance)
+			return;
+			
+		  if (document.visibilityState == "hidden") {
+			gameInstance.SendMessage('FocusManager', 'ApplicationFocusChangedWebCallback', 0);
+		  } else {
+			gameInstance.SendMessage('FocusManager', 'ApplicationFocusChangedWebCallback', 1);
+		  }
+		});
+		
+		window.addEventListener('resize', injectAdByWindowSize);
+		
+		function injectAdByWindowSize() {
+			// Inject small ad if screen is small, or large ad if screen is large
+			if (window.innerHeight < 900) {
+				if (document.getElementById("adRectangleBottom") == null) {
+					var el = document.getElementsByClassName("ad-rectangle-bottom")[0];
+					el.id = "adRectangleBottom";
+					cpmstarAPI({kind:'go',module:'POOL 84816', config: { conditions: { target: { el: el, kind: 'replace' }}}});
+				}
+			}
+			else {
+				if (document.getElementById("adLeaderboardBottom") == null) {
+					var el = document.getElementsByClassName("ad-leaderboard-bottom")[0];
+					el.id = "adLeaderboardBottom";
+					cpmstarAPI({kind:'go',module:'POOL 85075', config: { conditions: { target: { el: el, kind: 'replace' }}}});
+				}
+			}
+		}
+		
+		function showAds() {
+			console.log("show ads");
+			
+			document.getElementsByClassName("ad-rectangle-bottom")[0].style.display = "block";
+			document.getElementsByClassName("ad-leaderboard-bottom")[0].style.display = "block";
+			document.getElementById("adRectangleUpper").style.display = "block";
+
+			refresh();
+		}
+
+		function hideAds() {
+			console.log("hide ads");
+
+			document.getElementsByClassName("ad-rectangle-bottom")[0].style.display = "none";
+			document.getElementsByClassName("ad-leaderboard-bottom")[0].style.display = "none";
+			document.getElementById("adRectangleUpper").style.display = "none";
+		}
+
+		function refresh() {
+			if (document.getElementById("adRectangleBottom") != null &&
+				window.getComputedStyle(document.getElementsByClassName("ad-smallscreen")[0]).display != "none") {
+				cpmstarAPI({ kind: "adcmd", module: "POOL 84816", command: "refresh" });
+			}
+			
+			if (document.getElementById("adLeaderboardBottom") != null &&
+				window.getComputedStyle(document.getElementsByClassName("ad-largescreen")[0]).display != "none") {
+				cpmstarAPI({ kind: "adcmd", module: "POOL 85075", command: "refresh" });
+			}
+			
+			cpmstarAPI({ kind: "adcmd", module: "POOL 85074", command: "refresh" });
+			
+			console.log("refresh ads");
+		}
+
+		window.onfocus = function () {
+			console.log("onfocus");
+			refresh();
+		};
+    </script>
+  
+
+<script src="https://raw.githubusercontent.com/Mafia-Goose/chilibowlflash/main/justfall/UnityModule" id="6caa1920af7853a8160c24544ed84006"></script></body></html>
